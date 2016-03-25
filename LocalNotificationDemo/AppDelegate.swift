@@ -46,25 +46,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func registerLocalNotification()
     {
+        //Create action1  for Notification Message
         var localNotificationAction1 = UIMutableUserNotificationAction()
         localNotificationAction1.identifier = LocalNotificationIdentifier.kNotificationActionIdentifileStar
-        localNotificationAction1.title = "good"
-        
+        localNotificationAction1.title = "已阅"
+        //when click, handle in background, not in forground.
         localNotificationAction1.activationMode = UIUserNotificationActivationMode.Background
+        //set need unlock, then handle
         localNotificationAction1.authenticationRequired = true
         localNotificationAction1.destructive = false
         
-        
-        
+        //Create action2  for Notification Message
         var localNotificationAction2 = UIMutableUserNotificationAction()
         localNotificationAction2.identifier = LocalNotificationIdentifier.kNotificationActionIdentifileComment
         localNotificationAction2.title = "评论"
-        
         localNotificationAction2.activationMode = UIUserNotificationActivationMode.Background
+        //show input textFeild for user inputing
         localNotificationAction2.behavior = UIUserNotificationActionBehavior.TextInput
-        localNotificationAction2.parameters = [UIUserNotificationTextInputActionButtonTitleKey: "评论"]
+        //Set input textField right button title, title is "发送" in default
+        localNotificationAction2.parameters = [UIUserNotificationTextInputActionButtonTitleKey: "发表"]
         
-        
+        //Create Action category Set
         var category = UIMutableUserNotificationCategory()
         category.identifier = LocalNotificationIdentifier.kNotificationCategoryIdentifile
         category.setActions([localNotificationAction1, localNotificationAction2], forContext: UIUserNotificationActionContext.Minimal)
@@ -78,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
     
-        print("")
+        print("\(notification.userInfo!)")
         showAlertView("用户没点击按钮直接点的推送消息进来的/或者该app在前台状态时收到推送消息")
         var badge = UIApplication.sharedApplication().applicationIconBadgeNumber
         badge -= notification.applicationIconBadgeNumber
