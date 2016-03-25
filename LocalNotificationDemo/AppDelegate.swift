@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        registerLocalNotification()
+        
         return true
     }
 
@@ -35,10 +37,74 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func registerLocalNotification()
+    {
+        var localNotificationAction1 = UIMutableUserNotificationAction()
+        localNotificationAction1.identifier = LocalNotificationIdentifier.kNotificationActionIdentifileStar
+        localNotificationAction1.title = "good"
+        
+        localNotificationAction1.activationMode = UIUserNotificationActivationMode.Background
+        localNotificationAction1.authenticationRequired = true
+        localNotificationAction1.destructive = false
+        
+        
+        
+        var localNotificationAction2 = UIMutableUserNotificationAction()
+        localNotificationAction2.identifier = LocalNotificationIdentifier.kNotificationActionIdentifileComment
+        localNotificationAction2.title = "评论"
+        
+        localNotificationAction2.activationMode = UIUserNotificationActivationMode.Background
+        localNotificationAction2.behavior = UIUserNotificationActionBehavior.TextInput
+        localNotificationAction2.parameters = [UIUserNotificationTextInputActionButtonTitleKey: "评论"]
+        
+        
+        var category = UIMutableUserNotificationCategory()
+        category.identifier = LocalNotificationIdentifier.kNotificationCategoryIdentifile
+        category.setActions([localNotificationAction1, localNotificationAction2], forContext: UIUserNotificationActionContext.Minimal)
+        var sets: Set = [category]
+        
+        var settings = UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, UIUserNotificationType.Sound, UIUserNotificationType.Badge], categories: sets)
+        
+    UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+        
+    }
+    
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+    
+        print("")
+        showAlertView("用户没点击按钮直接点的推送消息进来的/或者该app在前台状态时收到推送消息")
+        var badge = UIApplication.sharedApplication().applicationIconBadgeNumber
+        badge -= notification.applicationIconBadgeNumber
+        badge = badge >= 0 ? badge : 0
+        UIApplication.sharedApplication().applicationIconBadgeNumber = badge
+    }
+    
+
+    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, withResponseInfo responseInfo: [NSObject : AnyObject], completionHandler: () -> Void) {
+        
+        if identifier == LocalNotificationIdentifier.kNotificationActionIdentifileStar
+        {
+            showAlertView("点赞")
+        }
+        else if identifier == LocalNotificationIdentifier.kNotificationActionIdentifileComment
+        {
+            showAlertView("用户评论为：\(responseInfo[UIUserNotificationActionResponseTypedTextKey])")
+        }
+        completionHandler()
+    }
+    
+    func showAlertView(message: String) {
+        var alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        var action = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(action)
+        window?.rootViewController?.showDetailViewController(alert, sender: nil)
     }
 
 
